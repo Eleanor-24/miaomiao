@@ -1,82 +1,39 @@
 <template>
     <div class="movie-body">
         <ul>
-            <li>
-                <div class="pic"></div>
+            <li v-for="item in movieList" :key="item.filmId">
+                <div class="pic"><img :src="item.poster"></div>
                 <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
+                    <h2>{{item.name}}</h2>
+                    <p>主演： {{item.actors[0].name}} {{item.actors[1].name}} {{item.actors[2].name}}</p>
+                    <p>{{item.category}}</p>
                 </div>
                 <div class="btn_pre">预售</div>
             </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-             <li>
-                <div class="pic"></div>
-                <div class="info-list">
-                    <h2>无名之辈</h2>
-                    <p><span class="person">17746</span>人想看</p>
-                    <p>主演：陈建兵，任素喜，潘斌龙</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
+             
         </ul>
     </div>
 </template>
 <script>
 export default {
-    name:'comingSoon'
+    name:'comingSoon',
+    data(){
+        return{
+            movieList:[]
+        }
+    },
+    mounted(){
+        this.axios({
+            url:"https://m.maizuo.com/gateway?cityId=110100&pageNum=1&pageSize=10&type=2&k=3956840",
+            headers:{
+                'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1605591823507686609223681","bc":"110100"}',
+                'X-Host': 'mall.film-ticket.film.list'
+            }
+        }).then(res=>{
+            // console.log(res.data)
+            this.movieList=res.data.data.films
+        })
+    }
     
 }
 </script>

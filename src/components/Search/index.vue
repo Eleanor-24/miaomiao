@@ -3,37 +3,66 @@
         <div class="search_input">
             <div class="search_input_wrapper">
                 <i class="iconfont icon-sousuo"></i>
-                <input type="text">
+                <input type="text" v-model="message">
             </div>					
         </div>
         <div class="search_result">
             <h3>电影/电视剧/综艺</h3>
             <ul>
-                <li>
-                    <div class="img"><img src=""></div>
+                <li v-for="(item,index) in movieList" :key="index">
+                    <div class="img"><img :src="item.img|setWH('128.180')"></div>
                     <div class="info">
-                        <p><span>无名之辈</span><span>8.5</span></p>
-                        <p>A Cool Fish</p>
-                        <p>剧情,喜剧,犯罪</p>
-                        <p>2018-11-16</p>
+                        <p><span>{{item.nm}}</span><span>{{item.sc}}</span></p>
+                        <p>{{item.star}}</p>
+                        <p>{{item.cat}}</p>
+                        <p>{{item.rt}}</p>
                     </div>
                 </li>
-                <li>
-                    <div class="img"><img src=""></div>
-                    <div class="info">
-                        <p><span>无名之辈</span><span>8.5</span></p>
-                        <p>A Cool Fish</p>
-                        <p>剧情,喜剧,犯罪</p>
-                        <p>2018-11-16</p>
-                    </div>
-                </li>
+              
             </ul>
         </div>
     </div>
 </template>
 <script>
 export default {
-    
+    name:"search",
+    data(){
+        return{
+            message:'',
+            movieList:[]
+        }
+    },
+    methods:{
+        cancelRequest(){
+            if(typeof this.source==='function'){
+                this.source('请求终止')
+            }
+        }
+    },
+    watch:{
+        message(newVal){
+            // console.log(newVal)
+            this.cancelRequest();
+            let that =this
+            this.axios.get('https://www.fastmock.site/mock/439419e7e4af035dfd885254a49fe033/miaomiao/searchList/cityId=10&kw='+newVal
+            ,{cancelToken:new this.axios.CancelToken(function executor(c){
+                that.source=c;
+                })
+            }).then(res=>{
+                if(res.data.movies){
+                    
+                    this.movieList=res.data.movies.list
+                }
+                
+            }).catch(err=>{
+                if(this.axios.isCancel(err)){
+                    console.log('request canceled',err.message);
+                }else{
+                    console.log(err)
+                }
+            })
+        }
+    }
 }
 </script>
 <style scoped>
