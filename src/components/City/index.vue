@@ -4,87 +4,103 @@
 			<div class="city_hot">
 				<h2>热门城市</h2>
 				<ul class="clearfix">
-					<li>上海</li>
-					<li>北京</li>
-					<li>上海</li>
-					<li>北京</li>
-					<li>上海</li>
-					<li>北京</li>
-					<li>上海</li>
-					<li>北京</li>
+					<li v-for="item in hotList" :key="item.cityId">{{item.name}}</li>
+					
 				</ul>
 			</div>
-			<div class="city_sort">
-				<div>
-					<h2>A</h2>
+			<div class="city_sort" ref="city_sort">
+				<div v-for="item in cityList" :key="item.index">
+					<h2>{{item.index}}</h2>
 					<ul>
-						<li>阿拉善盟</li>
-						<li>鞍山</li>
-						<li>安庆</li>
-						<li>安阳</li>
+						<li v-for="itemList in item.list" :key="itemList.cityId">{{itemList.name}}</li>
+						
 					</ul>
 				</div>
-				<div>
-					<h2>B</h2>
-					<ul>
-						<li>北京</li>
-						<li>保定</li>
-						<li>蚌埠</li>
-						<li>包头</li>
-					</ul>
-				</div>
-				<div>
-					<h2>A</h2>
-					<ul>
-						<li>阿拉善盟</li>
-						<li>鞍山</li>
-						<li>安庆</li>
-						<li>安阳</li>
-					</ul>
-				</div>
-				<div>
-					<h2>B</h2>
-					<ul>
-						<li>北京</li>
-						<li>保定</li>
-						<li>蚌埠</li>
-						<li>包头</li>
-					</ul>
-				</div>
-				<div>
-					<h2>A</h2>
-					<ul>
-						<li>阿拉善盟</li>
-						<li>鞍山</li>
-						<li>安庆</li>
-						<li>安阳</li>
-					</ul>
-				</div>
-				<div>
-					<h2>B</h2>
-					<ul>
-						<li>北京</li>
-						<li>保定</li>
-						<li>蚌埠</li>
-						<li>包头</li>
-					</ul>
-				</div>	
 			</div>
 		</div>
         <div class="city_index">
             <ul>
-                <li>A</li>
-                <li>B</li>
-                <li>C</li>
-                <li>D</li>
-                <li>E</li>
+                <li v-for="(item,index) in cityList" :key="item.index" @touchstart="handleToIndex(index)">{{item.index}}</li>
             </ul>
         </div>
     </div>
 </template>
 <script>
+
 export default {
-    name:'city'
+	name:'city',
+	data(){
+		return {
+			cityList:[],
+			hotList:[]
+		}
+	},
+	mounted(){
+		this.axios({
+			url:"https://m.maizuo.com/gateway?k=8702911",
+			headers:{
+				'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1605591823507686609223681"}',
+				'X-Host': 'mall.film-ticket.city.list'
+			}
+		}).then(res=>{
+			console.log(res.data)
+			if(res.data.msg==='ok'){
+				var cities=res.data.data.cities;
+				var {cityList,hotList} =this.formatCityList(cities)
+				this.cityList = cityList;
+				this.hotList = hotList;
+			}
+		})
+	},
+	methods:{
+		//将数据开造成：[{index:'A',list:[{nm:'安庆',id:123},{nm:'鞍山',id:345}]}]
+		formatCityList(cities){
+			var cityList = [];
+			var hotList=[];
+			for(var i=0;i<cities.length;i++){
+				if(cities[i].isHot==1){
+					hotList.push(cities[i])
+				}
+			}
+			for(var i=0;i<cities.length;i++){
+				var firstLetter = cities[i].pinyin.substring(0,1).toUpperCase();
+				if(toCom(firstLetter)){
+					cityList.push({index:firstLetter,list:[{name:cities[i].name,cityId:cities[i].cityId}]})
+				}else{
+					for(var j=0;j<cityList.length;j++){
+						if(cityList[j].index===firstLetter){
+							cityList[j].list.push({name:cities[i].name,cityId:cities[i].cityId});
+						}
+					}
+				}
+			}
+			cityList.sort((n1,n2)=>{
+				if(n1.index>n2.index){
+					return 1
+				}else{
+					return -1
+				}
+			})
+
+			function toCom(firstLetter){
+				for(var i=0;i<cityList.length;i++){
+					if(cityList[i].index===firstLetter){
+						return false
+					}
+				}
+				return true
+			}
+			console.log(cityList)
+			return {
+				cityList,
+				hotList
+			}
+		},
+		handleToIndex(index){
+			var h2 = this.$refs.city_sort.getElementsByTagName('h2');
+			this.$refs.city_sort.parentNode.scrollTop=h2[index].offsetTop;
+		}
+	}
 }
 </script>
 <style scoped>
