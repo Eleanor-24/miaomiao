@@ -1,19 +1,24 @@
-# miaomiao
+2020.12.7-2020.12.10
 
-## Project setup
-```
-npm install
-```
+搭建脚手架与远程仓库
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+路由配置
 
-### Compiles and minifies for production
-```
-npm run build
-```
+头部组件与底部导航组件
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+电影路由与组件拆分
+
+影院组件和登录组件
+
+城市组件数据渲染
+
+正在热映/即将上映组件数据渲染
+
+搜索影片数据渲染
+
+影院数据渲染
+
+
+
+
+

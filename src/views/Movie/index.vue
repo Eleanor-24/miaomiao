@@ -4,7 +4,7 @@
         <div id="content">
             <div class="movie_menu">
                 <router-link class="city_name" to="/movie/city" tag="div">
-                <span>大连</span><i class="iconfont iconxiala"></i>
+                <span>{{$store.state.city.nm}}</span><i class="iconfont iconxiala"></i>
                 </router-link>
                 <div class="hot_switch">
                     <router-link class="hot_item active" tag="div" to="/movie/nowPlaying">正在热映</router-link>

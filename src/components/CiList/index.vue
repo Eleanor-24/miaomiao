@@ -1,5 +1,7 @@
 <template>
     <div class="cinema_body">
+        <Loading v-if="isLoading"/>
+        <Scroller v-else>
         <ul>
             <li v-for="item in cinemaList" :key="item.cinemaId">
                 <div>
@@ -17,6 +19,7 @@
             </li>
             
         </ul>
+        </Scroller>
     </div>
 </template>
 <script>
@@ -24,18 +27,25 @@ export default {
     name:'CiList',
     data(){
         return{
-            cinemaList:[]
+            cinemaList:[],
+            isLoading:true,
+            preCityId:-1
         }
     },
-    mounted(){
+    activated(){
+        var cityId = this.$store.state.city.id;
+        if(this.preCityId===cityId) return;
+        this.isLoading=true
         this.axios({
-            url:"https://m.maizuo.com/gateway?cityId=310100&ticketFlag=1&k=526625",
+            url:"https://m.maizuo.com/gateway?cityId="+cityId+"&ticketFlag=1&k=526625",
             headers:{
                 'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1605591823507686609223681","bc":"310100"}',
                 'X-Host': 'mall.film-ticket.cinema.list'
             }
         }).then(res=>{
             this.cinemaList=res.data.data.cinemas
+            this.isLoading=false
+            this.preCityId=cityId
         })
     }
 }
