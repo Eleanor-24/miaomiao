@@ -1,26 +1,33 @@
 <template>
     <div class="city_body">
 		<div class="city_list">
+			<Loading v-if="isLoading"/>
+			<Scroller ref="city_list" v-else>
+			<div>
 			<div class="city_hot">
 				<h2>热门城市</h2>
+				
 				<ul class="clearfix">
-					<li v-for="item in hotList" :key="item.cityId">{{item.name}}</li>
+					<li v-for="item in hotList" :key="item.cityId" @click="handleToCity(item.name,item.cityId)">{{item.name}}</li>
 					
 				</ul>
+				
 			</div>
 			<div class="city_sort" ref="city_sort">
 				<div v-for="item in cityList" :key="item.index">
 					<h2>{{item.index}}</h2>
 					<ul>
-						<li v-for="itemList in item.list" :key="itemList.cityId">{{itemList.name}}</li>
+						<li v-for="itemList in item.list" :key="itemList.cityId" @click="handleToCity(itemList.name,itemList.cityId)">{{itemList.name}}</li>
 						
 					</ul>
 				</div>
 			</div>
+			</div>
+			</Scroller>
 		</div>
         <div class="city_index">
             <ul>
-                <li v-for="(item,index) in cityList" :key="item.index" @touchstart="handleToIndex(index)">{{item.index}}</li>
+                <li v-for="(item,index) in cityList" :key="item.index" @click="handleToIndex(index)" >{{item.index}}</li>
             </ul>
         </div>
     </div>
@@ -32,25 +39,39 @@ export default {
 	data(){
 		return {
 			cityList:[],
-			hotList:[]
+			hotList:[],
+			isLoading:true
 		}
 	},
 	mounted(){
-		this.axios({
-			url:"https://m.maizuo.com/gateway?k=8702911",
-			headers:{
-				'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1605591823507686609223681"}',
-				'X-Host': 'mall.film-ticket.city.list'
-			}
-		}).then(res=>{
-			console.log(res.data)
-			if(res.data.msg==='ok'){
-				var cities=res.data.data.cities;
-				var {cityList,hotList} =this.formatCityList(cities)
-				this.cityList = cityList;
-				this.hotList = hotList;
-			}
-		})
+		var cityList = window.localStorage.getItem('cityList')
+		var hotList = window.localStorage.getItem('hotList')
+		if(cityList&&hotList){
+			this.cityList = JSON.parse(cityList)
+			this.hotList = JSON.parse(hotList)
+			this.isLoading=false
+		}else{
+		
+			this.axios({
+				url:"https://m.maizuo.com/gateway?k=8702911",
+				headers:{
+					'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1605591823507686609223681"}',
+					'X-Host': 'mall.film-ticket.city.list'
+				}
+			}).then(res=>{
+				console.log(res.data)
+				if(res.data.msg==='ok'){
+					this.isLoading=false
+					var cities=res.data.data.cities;
+					var {cityList,hotList} =this.formatCityList(cities)
+					this.cityList = cityList;
+					this.hotList = hotList;
+					
+					window.localStorage.setItem('cityList',JSON.stringify(cityList))
+					window.localStorage.setItem('hotList',JSON.stringify(hotList))
+				}
+			})
+		}
 	},
 	methods:{
 		//将数据开造成：[{index:'A',list:[{nm:'安庆',id:123},{nm:'鞍山',id:345}]}]
@@ -97,9 +118,19 @@ export default {
 			}
 		},
 		handleToIndex(index){
+		
 			var h2 = this.$refs.city_sort.getElementsByTagName('h2');
-			this.$refs.city_sort.parentNode.scrollTop=h2[index].offsetTop;
+			
+			this.$refs.city_list.toScrollTop(-h2[index].offsetTop)
+		},
+		handleToCity(nm,id){
+			console.log(nm,id)
+			this.$store.commit('city/CITY_INFO',{nm,id})
+			window.localStorage.setItem('nowNm',nm);
+			window.localStorage.setItem('nowId',id);
+			this.$router.push('/movie/nowPlaying')
 		}
+		
 	}
 }
 </script>
