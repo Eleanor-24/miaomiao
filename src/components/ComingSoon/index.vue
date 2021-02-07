@@ -3,7 +3,7 @@
         <Loading  v-if="isLoading"/>
         <Scroller v-else>
             <ul>
-                <li v-for="item in movieList" :key="item.filmId">
+                <li v-for="item in movieList" :key="item.filmId" @click="handleToDetail(item.filmId)">
                     <div class="pic"><img :src="item.poster"></div>
                     <div class="info-list">
                         <h2>{{item.name}}</h2>
@@ -43,6 +43,12 @@ export default {
             this.isLoading=false
             this.preCityId = cityId
         })
+    },
+    methods:{
+        handleToDetail(movieId){
+			// console.log(id)
+			this.$router.push('/movie/detail/2/'+movieId)
+		},
     }
     
 }

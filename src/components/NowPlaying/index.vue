@@ -4,8 +4,8 @@
 		<Scroller v-else :handleToScroll="handleToScroll" :handleToEnd="handleToEnd">
 			<ul>
 				<li class="pullDown">{{pullDownMsg}}</li>
-				<li v-for="item in movieList" :key="item.filmId">
-					<div class="pic_show" @click="handleToDetail"><img :src="item.poster"></div>
+				<li v-for="item in movieList" :key="item.filmId" @click="handleToDetail(item.filmId)">
+					<div class="pic_show"><img :src="item.poster"></div>
 					<div class="info_list">
 						<h2>{{item.name}}</h2>
 						<p>观众评分 <span class="grade">{{item.grade}}</span></p>
@@ -51,8 +51,9 @@ export default {
 		})
 	},
 	methods:{
-		handleToDetail(){
-			console.log("hhh")
+		handleToDetail(movieId){
+			// console.log(id)
+			this.$router.push('/movie/detail/1/'+movieId)
 		},
 		handleToScroll(pos){
 			if(pos.y>30){
